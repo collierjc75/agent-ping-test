@@ -1,39 +1,30 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
-import pytz
 
 app = FastAPI()
 
-class PingRequest(BaseModel):
-    from_: str
-    to: str
-    message: str
-
-class PingResponse(BaseModel):
-    from_: str
-    to: str
-    echo: str
-    status: str = "pong"
-
 class WakeRequest(BaseModel):
-    from_: str
-    target: str
+    from_: str = Field(..., alias="from")
+    to: str
     reason: str
 
-class WakeResponse(BaseModel):
-    acknowledged: bool = True
-    status: str = "awake"
-    received_from: str
-    timestamp: str
+    class Config:
+        allow_population_by_field_name = True
 
-@app.post("/agent-ping-test", response_model=PingResponse)
-async def agent_ping(payload: PingRequest):
-    return PingResponse(from_=payload.from_, to=payload.to, echo=payload.message)
+@app.get("/")
+def home():
+    return {"message": "Agent Ping Test is Live!"}
 
-@app.post("/agent-wake", response_model=WakeResponse)
-async def agent_wake(payload: WakeRequest):
-    return WakeResponse(
-        received_from=payload.from_,
-        timestamp=datetime.now(pytz.utc).isoformat()
-    )
+@app.get("/agent-ping")
+def ping():
+    return {"status": "ok", "message": "ping received"}
+
+@app.post("/agent-wake")
+def wake(request: WakeRequest):
+    return {
+        "acknowledged": True,
+        "status": "awake",
+        "received_from": request.from_,
+        "timestamp": datetime.utcnow().isoformat() + "Z"
+    }
