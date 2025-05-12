@@ -1,0 +1,21 @@
+{
+  "from": "Continuum",
+  "to": "Kai",
+  "intent": "agent_ping_test",
+  "capsule": "ping_validation.v1",
+  "payload": {
+    "endpoint": "/agent-ping-test",
+    "test_payload": {
+      "from_": "Continuum",
+      "to": "Kai",
+      "message": "ping round 2"
+    },
+    "expect_response": {
+      "from_": "Continuum",
+      "to": "Kai",
+      "echo": "ping round 2",
+      "status": "pong"
+    },
+    "timestamp": "2025-05-12T02:50:00-04:00"
+  }
+}
